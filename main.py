@@ -1,13 +1,12 @@
 from datetime import date
 from uuid import uuid4
 
-
 class Library:
     def __init__(self, name):
         self.name = name
         self.student = set()
         self.books = set()
-        return f"Library has been created"
+        return f"{self.name} has been created"
 
     def __repr__(self):
         return f"Number of books in the library {len(self.books)}. Number of students {len(self.student)}"
@@ -29,11 +28,17 @@ class Library:
         remove_student = any(x for x in self.student if x.email == email) 
         self.student.remove(remove_student)
 
-    
+    def seek_book(self, criteria, value):
+        valid_criteria = ["title", "authors", "year", "isbn", "genre"]
+        if any(x == criteria for x in valid_criteria):
+            result = all(x for x in self.books if x.criteria == value)
+        else:
+            print("Such criteria does not exsict")
+        return result
+
 # change student’s borrowing limit
 # see all books
 # see all available books (at least one available copy)
-# search for a book by different criteria
 
 class Book:
     def __init__(self, title, authors: list, year, isbn, genre):
@@ -60,7 +65,7 @@ class Book:
     def available_copies(self):
         total = 0
         for copy in self.copies:
-            if copy.availability == 'available':
+            if copy.availability == True:
                 total += 1
             else:
                 pass
@@ -68,26 +73,25 @@ class Book:
 
  
 
-
 class BookCopy:
-    def __init__(self, condition: int, availability='available', borrower=None, borrowed_date=None,
+    def __init__(self, condition: int, availability = True, borrower=None, borrowed_date=None,
                  book_id=None):  # refer to book
         self.book_id = book_id
         self.borrower = borrower
         self.borrowed_date = borrowed_date
-        self.availability = availability # somehow limit this to binary option
+        self.availability = availability
         self.condition = condition  # Limit this to 10
 
     def borrow_book(self, borrower):  # add student_id obj, check the limnit of 5 books and single item before lent, and if there are expired books
         self.borrower = borrower
         self.borrowed_date = date.today()
-        self.availability = "on loan"
+        self.availability = False
         return f"Book is lent to {borrower}"
 
     def return_book(self):  # remove student_id obj, this should take element from student as well.
         self.borrower = None
         self.borrowed_date = None
-        self.availability = "available"
+        self.availability = True
         return f"Book has been returned"
 
     def change_condition(self, condition):
